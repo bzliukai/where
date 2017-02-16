@@ -1,0 +1,548 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../../font/Kaiti-SC-Regular.ttf'),
+            url('../../font/kaiti_sc.otf')
+        }
+
+        body {
+            background: url('../../image/bg_1080_1920.png') no-repeat;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+
+        }
+        .aui-content {
+            margin-bottom: 0;
+        }
+        .content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family:conmmonFont;
+        }
+        .info {
+            position: relative;
+            padding: 20px 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            vertical-align: center;
+        }
+        .info p.title {
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        .logo {
+            width: 100%;
+            text-align: center;
+            color: #ffffff;
+            font-size: 36px;
+            padding-top: 30px;
+        }
+        .box {
+            position: absolute;
+            top: 20%;
+            margin: 45px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .box .input-group {
+            background: #ffffff;
+            background: rgba(255,255,255,0.4) !important;
+            color: #ff9900;
+            position: relative;
+            display: table;
+            border-collapse: separate;
+            padding: 6px 0;
+        }
+        .box .btn-group {
+            color: #ffffff;
+            position: relative;
+            display: table;
+            border-collapse: separate;
+            width: 100%;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            overflow: hidden;
+        }
+        .box .btn-group .aui-btn {
+            border-radius: 0;
+            margin: 0;
+        }
+        .box .input-group:after {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 1px;
+            content: '';
+            background-color: #ffffff;
+            -webkit-transform: scaleY(.3);
+                  transform: scaleY(.3);
+        }
+        .box .input-group:last-child:after {
+            height: 0;
+        }
+        .box .input-group .input-group-addon {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1;
+            color: #ffffff;
+            text-align: center;
+            display: table-cell;
+            width: 1%;
+            white-space: nowrap;
+            vertical-align: middle;
+            padding: 6px 12px;
+        }
+        i.aui-iconfont {
+            font-size: 18px;
+        }
+        .box .input-group .form-control {
+            background: none;
+            margin: 0;
+            padding: 5px 0;
+            display: table-cell;
+            position: relative;
+            z-index: 2;
+            float: left;
+            width: 100%;
+            margin-bottom: 0;
+            border:none;
+            border-radius: 0;
+            color: #ffffff;
+        }
+        
+        input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+            color:    #ffffff;
+        }
+        .register {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        #login_with_wx{
+            width:50px;
+            height:50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="frm" class="aui-content content">
+        <div class="info">
+            <div class="logo">WHERE</div>
+            <div class="box">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="aui-iconfont aui-icon-mobile"></i></span>
+                    <input type="number"  name="mobile" id="user_phone" class="form-control" placeholder="手机号"  data-rule="tm" data-nullmsg="手机或固话不能为空" data-errmsg="你输入的不是一个手机或者固话" data-sucmsg=""/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="aui-iconfont aui-icon-lock"></i></span>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="密码"  data-rule="s6-10"
+                           data-nullmsg="请输入密码" data-errmsg="你输入的密码格式不正确" data-sucmsg=""/>
+                </div>
+                <div class="btn-group">
+                    <div id="btn" class="aui-btn aui-btn-default aui-btn-block aui-btn-outlined" tapmode>登陆</div>
+                </div>
+
+                <div class="aui-flex-col aui-flex-center aui-border-t">
+                    <div class="aui-flex-item-8 aui-flex-row aui-flex-middle aui-padded-10">
+                        <div id="click_register" class="aui-btn aui-btn-warning aui-btn-block aui-btn-outlined" tapmode >立即注册</div>
+                    </div>
+                    <p class="aui-flex-item-4 aui-flex-row aui-text-right register">
+                        忘记密码?
+                    </p>
+                </div>
+                <div class="aui-flex-col aui-flex-left ">
+                    <div class="aui-flex-item-4 aui-flex-col aui-flex-left aui-padded-10 ">
+                        <img id="login_with_wx" src="../../image/wechat_80_80.png">
+                        <p>微信登陆</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js"></script>
+<script type="text/javascript" src="../../script/config.js"></script>
+<script type="text/javascript" src="../../script/aui-tap.js"></script>
+<script type="text/javascript">
+    //两次退出
+    first = null;
+
+
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        startCheck: function () {
+            // 开始检查执行函数，一般用户动画效果，比如加载中，提交中，验证中。
+        },
+        singleSuccess: function (e, msg) {
+            // 单个表单验证成功执行函数，可以通过这个方法写一些小特效或者处理方法
+            // e：当前验证的对象，msg：提示信息。
+
+        },
+        singleError: function (e, msg) {
+            // 单个表单验证失败执行函数
+            // e：当前验证的对象，msg：提示信息。
+
+            alert(msg);
+            return;
+        },
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            login();
+        }
+    });
+    function back() {
+        api.addEventListener({
+            name : 'keyback'
+        }, function(ret, err) {
+            if (!first) {
+                first = new Date().getTime();
+                api.toast({
+                    msg : '再按一次返回桌面',
+                    duration : 1500,
+                    location : 'bottom'
+                });
+                setTimeout(function() {
+                    first = null;
+                }, 1000);
+            } else {
+                if (new Date().getTime() - first < 1000) {
+//				api.closeWidget({
+//					silent : true
+//				});
+                    api.toLauncher();
+                }
+            }
+        });
+    }
+    // 登陆的方法
+    function login(){
+
+        var user_phone = $api.val($api.byId('user_phone'));
+        var password = $api.val($api.byId('password'));
+        if(user_phone.length = 11 && password.length >=6){
+            api.showProgress({
+                style: 'default',
+                animationType: 'fade',
+                title: '登录中...',
+                text: '先喝杯茶...',
+                modal: false
+            });
+            api.ajax({
+                url: config.hostname+'login/login',
+                method: 'post',
+                data: {
+                    values: {
+                        phone: user_phone,
+                        password:password
+                    }
+                }
+            },function(ret, err){
+//                alert(JSON.stringify(ret));
+                if(ret.status==1) {
+                    var ret_full_info = ret;
+                    api.hideProgress();
+//                api.alert({msg:'登陆成功信息'+JSON.stringify(ret)});
+                    $api.setStorage('phone_user_info_full',ret_full_info);
+                    $api.setStorage('activity_cmd',ret_full_info);
+                    /*
+                    * 单独存储用户的头像信息
+                    * 1.存储用户的大的头像
+                    * 2.存储用户小的头像
+                    * */
+                    // 1。用户的大头像
+                    $api.setStorage('user_now_large_icon',ret.head_img);
+                    //2. 用户的小头像
+                    $api.setStorage('user_now_small_icon',ret.headimg_dot);
+                    alert('user_info'+JSON.stringify($api.getStorage('phone_user_info_full')));
+//                    alert('activity:'+JSON.stringify($api.getStorage('activity_cmd')));
+                    /*
+                    * 提示用户登录成功
+                    * */
+
+                    api.toast({
+                        msg: '登陆成功',
+                        duration: 2000,
+                        location: 'middle'
+
+                    });
+                    /*
+                    * 根据用户权限创建活动页面对应的按钮 -- 创建行程 查看行程 加入行程
+                    * */
+                    var jsfun = 'cmd_show_template();';
+                    api.execScript({
+                        name: 'root',
+                        frameName: 'frame1',
+                        script: jsfun
+                    });
+                    /*
+                    * 根据用户权限创建活动页面对应 的按钮 结束
+                    * */
+                    api.closeWin({
+                        animation:{
+                            type:"curl",                //动画类型（详见动画类型常量）
+                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                            duration:1500               //动画过渡时间，默认300毫秒
+                        }
+                    });
+                }else if(ret.status==0) {
+                    api.hideProgress();
+//                api.alert({msg:JSON.stringify(ret)});
+                    api.toast({
+                        msg: '用户不存在，请注册!',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                } else {
+                    api.hideProgress();
+//                api.alert({msg:'这是登陆出错'+JSON.stringify(ret)});
+                    api.toast({
+                        msg: '用户名或者密码错误!',
+                        duration: 2000,
+                        location: 'middle'
+                    });
+                }
+            });
+        }else{
+            alert('密码或者用户名格式错误');
+
+        }
+    }
+    //打开注册界面
+    function register(){
+        api.showProgress({
+            style: 'default',
+            animationType: 'fade',
+            title: '加载中...',
+            text: '稍等...',
+            modal: false
+        });
+
+        api.openWin({
+            name:'register_win',
+            url:'register_win.html',
+            delay:300,
+            animation:{
+                type:'fade'
+            }
+        });
+        api.hideProgress();
+    }
+    apiready = function(){
+        wx = api.require('wx');
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header);
+        api.parseTapmode();
+        //监听登陆注册等按钮的tap事件
+        var login = $api.byId('click_register');
+        var login_with_wx = $api.byId('login_with_wx');
+        login.addEventListener('tap', function(e){
+            register();
+        }, false);
+        login_with_wx.addEventListener('tap', function(e){
+            login_wx();
+        }, false);
+        /*
+        监听返回按钮，针对安卓手机，禁止退出当前界面就进入APP首页
+        */
+//        back();
+         /*
+         * 监听是否登陆成功
+         * */
+        api.addEventListener({
+            name: 'login_success'
+        }, function(){
+            apiready();
+        });
+    };
+//    ========================微信登陆模块===============================
+    // 开始微信登陆
+    function login_wx(){
+            //监测是否安装微信
+        wx.isInstalled(function(ret, err){
+            if(ret.installed){
+                api.toast({
+                    msg: '正在启动微信，请稍等...',
+                    duration: 3000,
+                    location: 'bottom'
+                });
+                //开始认证
+                author_wx(ret);
+            }else{
+                api.toast({
+                    msg: '未安装微信,请安装微信！',
+                    duration: 2000,
+                    location: 'bottom'
+                });
+            }
+        });
+    }
+    // 开始用户登陆权限授权认证
+    function author_wx(ret){
+        if(ret){
+
+            wx.auth({
+                apiKey: 'wx36d63793fa087759'
+            }, function(ret, err){
+                if(ret.status){
+//                    alert(JSON.stringify(ret));
+                    get_access_token_wx(ret.code);
+                }else{
+                    alert(err.code);
+                }
+            });
+        }
+
+    }
+    //验证成功之后,获取授权用户唯一openID,和accessToken的数值
+    function get_access_token_wx(code){
+        wx.getToken({
+            apiKey: 'wx36d63793fa087759',
+            apiSecret: '93d1f7bdd14176a4fd412209245afbf6',
+            code: code
+        },function(ret, err){
+            if(ret.status){
+//                alert(JSON.stringify(ret));
+                var only_accessToken  = ret.accessToken;
+                var only_openId = ret.openId;
+                 window.only_dynamicToken = ret.dynamicToken;
+//                alert(only_openId);
+                get_user_info_wx(only_accessToken,only_openId);
+            }else{
+                alert(err.code);
+                if(err.code==1){
+                    refresh_accessToken_wx(only_dynamicToken);
+                }
+            }
+        });
+    }
+    //通过验证的accessToken和openId,获取用户的信息
+    function get_user_info_wx(accessToken,openId){
+        wx.getUserInfo({
+            accessToken: accessToken,
+            openId: openId
+        }, function(ret,err){
+            if(ret.status){
+//                alert(JSON.stringify(ret));
+                var wx_user_Id = ret.unionid;
+                var wx_user_Nickname = ret.nickname;
+                var wx_user_HeadImgUrl = ret.headimgurl;
+                store_user_info(wx_user_Id,wx_user_Nickname,wx_user_HeadImgUrl);
+            }else{
+                alert(err.code);
+            }
+        });
+    }
+    //当accessToken超时,刷新token的方法
+    function refresh_accessToken_wx(only_dynamicToken){
+        wx.refreshToken({
+            apiKey: 'wx36d63793fa087759',
+            dynamicToken: only_dynamicToken
+        },function(ret,err){
+            if(ret.status){
+//                alert(JSON.stringify(ret));
+            }else{
+                alert(err.code);
+            }
+        });
+    }
+    //储存用户登陆信息,昵称,头像,唯一ID,发起ajax请求
+    function store_user_info (wx_user_Id,wx_user_Nickname,wx_user_HeadImgUrl){
+        $api.setStorage('wx_user_info',{
+            value : {
+                unionid : wx_user_Id,
+                nickname : wx_user_Nickname,
+                headimgurl : wx_user_HeadImgUrl
+            }
+        });
+        alert(JSON.stringify($api.getStorage('wx_user_info')));
+        api.ajax({
+
+            url: config.hostname+'login/login',
+            method: 'post',
+            data:{
+                values:{
+                    unionid : wx_user_Id
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                alert('ret值：'+JSON.stringify(ret));
+                //状态值为0，不存在，需要补全信息
+                if(ret.status==0){
+                    //提示需要补全信息
+                    api.showProgress({
+                        style: 'default',
+                        animationType: 'fade',
+                        title: '需要补全信息！',
+                        text: '请稍候...',
+                        modal: false
+                    });
+                    api.openWin({
+                        name: 'wx_register_win.html',
+                        url: './wx_register_win.html',
+                        pageParam: {
+                            name: 'weixin_add_info'
+                        },
+                        animation:{
+                            type:"curl",                //动画类型（详见动画类型常量）
+                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                            duration:500             //动画过渡时间，默认300毫秒
+                        }
+                    });
+                    //关闭提示
+                    api.hideProgress();
+                }else{
+                    //正常的微信登录
+                    window.ret_info = ret;
+                    $api.setStorage(
+                            'wx_user_full_info',{
+                                value : {
+                                    user_full_info:ret_info
+                                }
+                            });
+                    alert(JSON.stringify($api.getStorage('wx_user_full_info').value.user_full_info));
+
+                    api.toast({
+                        msg: '登录成功！',
+                        duration: 1000,
+                        location: 'bottom'
+                    });
+                    api.closeWin({
+                        animation:{
+                            type:"curl",                //动画类型（详见动画类型常量）
+                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                            duration:1500               //动画过渡时间，默认300毫秒
+                        }
+                    });
+                }
+//                api.alert({msg:JSON.stringify(ret)});
+            } else {
+                api.alert({msg:'错误信息：'+JSON.stringify(err)});
+            }
+        });
+    }
+//    ========================微信登陆模块结束===================================
+</script>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/mycommon.css" />
+    <style>
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../font/Kaiti-SC-Regular.ttf'),
+            url('../font/kaiti_sc.otf')
+        }
+        .my-header {
+            background: url("../image/my_info_bg.png");
+            position: relative;
+            font-family: conmmonFont;
+
+        }
+        #header {
+            position: relative;
+            padding: 30px 0;
+            width: 100%;
+            bottom: 0;
+            text-align: center;
+            vertical-align: center;
+            margin-bottom: 0;
+            font-family: conmmonFont;
+
+        }
+        #header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+        .my-info p.nickname {
+            margin-top: 5px;
+            color: #ffffff;
+            font-size: 18px;
+            font-family: conmmonFont;
+
+
+        }
+        .aui-list-view-cell {
+            line-height: 26px;
+            font-family: conmmonFont;
+
+        }
+        .belong_to{
+            color: #ffffff;
+            margin-top: 5px;
+            line-height: 14px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content:center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="aui-toast"  style="display:none" id="loading">
+    <div class="aui-toast-loading"></div>
+    <div class="aui-toast-content">加载..</div>
+</div>
+<section class="aui-content my-header" id="header">
+    <div class="my-info">
+        <img src="../image/noavatar.gif" id="avatar" onclick="newUser_pic()" tapmode />
+        <p class="nickname" id="nickname">小米无节操</p>
+        <div class="belong_to">
+            突击联盟<i class="aui-iconfont aui-icon-male aui-bg-success"></i>
+        </div>
+    </div>
+</section>
+<section class="aui-content">
+    <ul class="aui-list-view">
+        <li class="aui-list-view-cell" tapmode onclick="openWin('my_info_win')">
+            <a class="aui-arrow-right">个人信息</a>
+        </li>
+        <li class="aui-list-view-cell" tapmode onclick="openWin('author_leader_win')">
+            <a class="aui-arrow-right">申请领队</a>
+        </li>
+        <li class="aui-list-view-cell" tapmode onclick="openWin('my_steps_win')">
+            <a class="aui-arrow-right">我的足迹</a>
+        </li>
+        <li class="aui-list-view-cell" tapmode onclick="openWin('my_sos_win')">
+            <a class="aui-arrow-right">SOS</a>
+        </li>
+        <li class="aui-list-view-cell" tapmode onclick="openWin('about_where_win')">
+            <a class="aui-arrow-right">关于我们</a>
+        </li>
+    </ul>
+</section>
+
+</body>
+<script type="text/javascript" src="../script/api.js" ></script>
+<script type="text/javascript" src="../script/config.js" ></script>
+<script type="text/javascript">
+
+    var delay = 0;
+// apiready 准备
+    apiready = function () {
+        window.imageClip = api.require('imageClip');
+        api.parseTapmode();
+        showLoading();
+        /*
+        * 根据不同平台设置相应延迟
+        * */
+        if(api.systemType != 'ios'){
+            delay = 300;
+
+        }
+        /*
+        * 设置获取的头像  手机用户
+        * */
+//        download_header_img();
+        if($api.getStorage('user_now_large_icon')!=undefined){
+            $api.attr($api.byId('avatar'), 'src', $api.getStorage('user_now_large_icon'));
+        }else{
+            $api.attr($api.byId('avatar'), 'src', $api.getStorage('phone_user_info_full').head_img);
+        }
+
+        if($api.getStorage('phone_user_info_full')!=undefined){
+            ($api.byId('nickname').innerHTML = $api.getStorage('phone_user_info_full').username);
+        }else{
+            ($api.byId('nickname').innerHTML ='请修改个人昵称');
+        }
+
+
+
+
+
+    };
+// apiready 准备完成
+
+    // 加载loading 第一次加载界面
+    function showLoading(){
+        $api.css($api.byId("loading"),"display:block");
+        setTimeout(function(){
+            $api.css($api.byId("loading"),"display:none");
+        },1000)
+    }
+    /*
+    * 打开列表选中的页面 ================================
+    * */
+    function openWin(name){
+        api.openWin({
+            name:''+name+'',
+            url:'./user/'+name+'.html',
+            delay:delay
+        })
+    }
+    /*
+     * 下载当前用户的头像(手机直接注册的用户)
+     * */
+    function download_header_img(){
+        alert('头像地址：'+$api.getStorage('phone_user_info_full').head_img);
+        api.download({
+            url: $api.getStorage('phone_user_info_full').head_img,
+            cache: true,
+            allowResume: true
+        }, function(ret, err) {
+            if (ret.state == 1) {
+                //下载成功
+                alert(ret.savePath);
+                $api.attr($api.byId('avatar'), 'src', ret.savePath);
+            } else {
+                alert('获取头像失败!');
+            }
+        });
+
+    }
+    /*
+    * 头像选取
+    * */
+    function newUser_pic() {
+        api.actionSheet({
+            cancelTitle : '取消',
+            buttons : ['相册', '照相机']
+        }, function(ret, err) {
+            if (ret.buttonIndex == 1) {
+                var scene = 'album';
+                select(scene);
+            } else if (ret.buttonIndex == 2) {
+                var scene = 'camera';
+                select(scene);
+            } else {
+                return false;
+            }
+        });
+    }
+    /*
+    * 从相册中选取
+    * */
+    function newselct() {
+        select("album");
+    }
+
+    function select(scene) {
+        api.getPicture({
+            sourceType : scene,
+            encodingType : 'jpg',
+            mediaValue : 'pic',
+            destinationType : 'url'
+        }, function(ret, err) {
+            if (ret) {
+                if (!ret.data) {//如果不选择图片，则退出
+                    return;
+                }
+                api.openWin({
+                    name : "imageWin",
+                    url : "imageclip/imageWin.html",
+                    pageParam : {
+                        imgUrl : ret.data
+                    },
+                    animation : {
+                        type : "none",
+                        subType : "from_right",
+                        duration : 0
+                    }
+                })
+            } else {
+                api.alert({
+                    msg : err.msg
+                });
+            }
+        });
+        return false;
+    }
+            /*
+            * 图片保存 关闭截图
+            * */
+    function ImgUrl(savePath) {
+        //替换头像为之前截取的头像路径（本地的）
+        $api.attr($api.byId('avatar'), 'src', savePath);
+        //上传截取的头像信息
+        api.ajax({
+            url: config.hostname+'user/updateimg',
+            method: 'post',
+            data: {
+                values: {
+                   user_id:$api.getStorage('phone_user_info_full').user_id
+                },
+                files: {
+                    file: $api.getStorage('user_new_select_logo')
+                }
+            }
+        }, function(ret, err) {
+            if (ret.status==1) {
+                /*
+                * 提示上传头像成功
+                * */
+                api.toast({
+                    msg: '头像上传成功',
+                    duration: 2000,
+                    location: 'middle'
+                });
+//                alert('上传成功返回信息：'+JSON.stringify(ret));
+                /*
+                * 存储48*48的头像信息
+                * */
+                $api.setStorage('user_now_small_icon',ret.headimg_dot);
+                /*
+                 * 存储原来的头像信息
+                 * */
+                $api.setStorage('user_now_large_icon',ret.head_img);
+                /*
+                * 发送事件-- 发送给地图界面-- 地图界面将远程的图标地址，下载图标，将图标给当前用户
+                * */
+                api.sendEvent({
+                    name: 'draw_user_dot_icon'
+                });
+            } else {
+                api.alert({ msg:'上传头像失败,请检查网络!' });
+            }
+        });
+        api.closeWin({
+            name : "imageWin"
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>加入行程</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style>
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../../font/Kaiti-SC-Regular.ttf'),
+            url('../../font/kaiti_sc.otf')
+        }
+        .aui-bar {
+            background: #3bafda;
+            color: #ffffff
+        }
+        body{
+            height: auto;
+        }
+        .aui-card {
+            margin-top: 15px;
+        }
+        .aui-content {
+            margin-bottom: 0;
+        }
+        p {
+            padding: 0 10px;
+        }
+        p.padded {
+            padding: 10px;
+        }
+        .price-list .amount strong {
+            font-size: 18px;
+            font-weight: 400;
+        }
+        .basic-info {
+            margin-bottom: 15px;
+        }
+        @-webkit-keyframes fadeIn {
+            from { background: #ffffff;border: 1px solid #ddd;}
+            to { background: #ff9900; border: 1px solid #ff9900;}
+        }
+        .aui-content-padded {
+            margin-top: 15px;
+        }
+        .join-content{
+            margin-top: 80%;
+            font-family: conmmonFont;
+        }
+        #btn{
+            font-family: conmmonFont;
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="aui-toast" style="display:none" id="default">
+    <i class="aui-iconfont aui-icon-check"></i>
+    <div class="aui-toast-content">加入行程成功</div>
+</div>
+<div class="aui-content aui-card aui-noborder join-content" id="frm">
+    <div class="aui-form">
+        <div class="aui-input-row">
+            <input type="text" class="aui-input" placeholder="输入部落口令" id="join_code" data-rule="n" data-nullmsg="口令不能为空" data-errmsg="你输入的口令格式不对" data-sucmsg=""/>
+        </div>
+    </div>
+</div>
+<div class="aui-content-padded">
+    <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined" id="btn" tapmode >加入俱乐部</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/config.js"></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js"></script>
+<script type="text/javascript">
+
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        startCheck: function () {
+            // 开始检查执行函数，一般用户动画效果，比如加载中，提交中，验证中。
+        },
+        singleSuccess: function (e, msg) {
+            // 单个表单验证成功执行函数，可以通过这个方法写一些小特效或者处理方法
+            // e：当前验证的对象，msg：提示信息。
+
+        },
+        singleError: function (e, msg) {
+            // 单个表单验证失败执行函数
+            // e：当前验证的对象，msg：提示信息。
+
+            alert(msg);
+            return;
+        },
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            join_certificate();
+        }
+    });
+    apiready = function(){
+//        uploader.init();
+    };
+
+    /*
+    * ===============加入行程开始认证==========================
+    * */
+    function join_certificate(){
+        var _join_code = $api.val($api.byId('join_code'));
+        /*
+        * 创建房间，创建完成之后，领队先加入房间
+        * */
+        api.ajax({
+            url: config.hostname+'travel/jointravel',
+            method: 'post',
+            data: {
+                values: {
+                    user_id:$api.getStorage('phone_user_info_full').user_id,
+                    travel_num: _join_code
+                }
+            }
+        }, function(ret, err) {
+            if (ret) {
+                alert(JSON.stringify(ret));
+                if(ret.status==1){
+                    $api.setStorage('travel_num',ret.travel_num);
+                    //创建行程完成，-- 传送相应的用户数据数据
+                    api.ajax({
+                        url: config.hostname+'ontravel/join',
+                        method: 'post',
+                        data: {
+                            values: {
+                                travel_num:$api.getStorage('travel_num'),
+                                user_id: $api.getStorage('phone_user_info_full').user_id,
+                                user_phone:$api.getStorage('phone_user_info_full').phone,
+                                user_name:$api.getStorage('phone_user_info_full').username,
+                                user_img_dot:$api.getStorage('phone_user_info_full').headimg_dot,
+                                user_img_head:$api.getStorage('phone_user_info_full').head_img,
+                                user_now_line:$api.getStorage('now_user_lat_lon')
+                            }
+                        }
+                    }, function(ret, err) {
+                        if (ret) {
+                            api.alert({ msg: JSON.stringify(ret) });
+                            // 0 表示未完成 ，不能进入加入行程界面
+                            $api.setStorage('user_travel_status',0);
+                            /*
+                             * 发送渲染旅行详情事件
+                             * */
+                            /*
+                             * 关闭当前窗口
+                             * */
+                            //每隔1分钟，向服务器提交当前用户的位置信息
+                            alert('下面在执行Ajax第三部');
+                            api.ajax({
+                                url: config.hostname+'ontravel/updateline',
+                                method: 'post',
+                                data: {
+                                    values: {
+                                        travel_num:$api.getStorage('travel_num'),
+                                        user_id: $api.getStorage('phone_user_info_full').user_id,
+                                        user_now_line:$api.getStorage('now_user_lat_lon')
+                                    }
+                                }
+                            }, function(ret, err) {
+                                if (ret) {
+                                    api.alert({ msg: JSON.stringify(ret) });
+                                    api.sendEvent({
+                                        name: 'show_travel_details'
+
+                                    });
+                                    showDefault();
+                                    api.closeWin({
+                                        animation:{
+                                            type:'curl',
+                                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                                            duration:300
+                                        }
+                                    });
+
+                                } else {
+                                    api.alert({ msg: JSON.stringify(ret) });
+                                }
+                            });
+//                            api.closeWin({
+//                                animation:{
+//                                    type:'curl',
+//                                    subType:"from_top",       //动画子类型（详见动画子类型常量）
+//                                    duration:300
+//                                }
+//                            });
+                        } else {
+                            api.alert({ msg: JSON.stringify(err) });
+                        }
+                    });
+                }
+//                api.alert({ msg: JSON.stringify(ret)});
+                /*
+                 * 发送渲染旅行详情事件*****************************
+                 * */
+
+                /*
+                 * 关闭当前窗口
+                 * */
+                /*
+                 * 提示当前创建的行程号
+                 * */
+//                api.toast({
+//                    msg: '加入该行程成功！',
+//                    duration: 3000,
+//                    location: 'middle'
+//                });
+
+
+            } else {
+                api.alert({ msg: JSON.stringify(err)});
+            }
+        });
+    }
+    function showDefault(){
+        $api.css($api.byId("default"),"display:block");
+        setTimeout(function(){
+            $api.css($api.byId("default"),"display:none");
+        },2000)
+    }
+
+</script>
+</html>

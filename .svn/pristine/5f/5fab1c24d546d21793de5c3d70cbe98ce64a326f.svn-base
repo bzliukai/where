@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>资料</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style>
+        body{
+            height: auto;
+        }
+        .aui-card {
+            margin-top: 15px;
+        }
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../../font/Kaiti-SC-Regular.ttf'),
+            url('../../font/kaiti_sc.otf')
+        }
+        #btn{
+            font-family: conmmonFont;
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="aui-toast" style="display:none" id="default">
+    <i class="aui-iconfont aui-icon-check"></i>
+    <div class="aui-toast-content">提交成功</div>
+</div>
+<div class="aui-content aui-card aui-noborder">
+
+    <div class="aui-tips aui-tips-success" id="show_code_main">
+
+    </div>
+
+    <script id="show_table_template" type="text/x-dot-template">
+        <div class="aui-tips-content aui-arrow-right aui-ellipsis-1">
+            <i class="aui-iconfont aui-icon-warnfill"></i>
+            您的行程号：{{= it.code}}，请通知您的队员
+        </div>
+    </script>
+
+    <div class="aui-form" id="frm">
+        <div class="aui-input-row">
+            <span class="aui-input-addon">手机</span>
+            <input type="text" class="aui-input" id="mobile" value=""  data-rule="tm" data-nullmsg="手机号不能为空" data-errmsg="手机号格式有误" data-sucmsg="" readonly/>
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">姓名</span>
+            <input type="text" class="aui-input" id="name" placeholder="姓名" data-rule="*3-5" data-nullmsg="姓名不能为空" data-errmsg="姓名格式有误" data-sucmsg=""/>
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">昵称</span>
+            <input type="text" class="aui-input" id="username" placeholder="昵称" data-rule="*3-5" data-nullmsg="姓名不能为空" data-errmsg="姓名格式有误" data-sucmsg=""/>
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">性别</span>
+            <div class="aui-pull-left" id="sex">
+                <input class="aui-radio aui-radio-info" type="radio" name="sex" id="man" value="man" checked="checked"> <span class="aui-radio-name">男</span>
+                <input class="aui-radio aui-radio-warning" type="radio" name="sex" id="woman" value="women"> <span class="aui-radio-name">女</span>
+            </div>
+
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">生日</span>
+            <input type="text" class="aui-input" placeholder="年/月/日" id="birthday" readonly tapmode onclick="openPicker()" data-rule="date" data-nullmsg="出生日期为空" data-errmsg="你输入的日期格式不正确" data-sucmsg="" />
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">地址</span>
+            <input type="text" class="aui-input" placeholder="地址" id="address" data-rule="*" data-nullmsg="地址不能为空" data-errmsg="地址格式有误" data-sucmsg=""/>
+        </div>
+    </div>
+</div>
+<div class="aui-content-padded">
+    <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined" id="btn" >提交修改</div>
+</div>
+<div class="aui-content-padded">
+    <div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined" id="out" tapmode onclick="goPageLogin()" >退出登录</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/config.js"></script>
+<script type="text/javascript" src="../../script/doT.min.js"></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js"></script>
+<script type="text/javascript">
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        startCheck: function () {
+            // 开始检查执行函数，一般用户动画效果，比如加载中，提交中，验证中。
+        },
+        singleSuccess: function (e, msg) {
+            // 单个表单验证成功执行函数，可以通过这个方法写一些小特效或者处理方法
+            // e：当前验证的对象，msg：提示信息。
+
+        },
+        singleError: function (e, msg) {
+            // 单个表单验证失败执行函数
+            // e：当前验证的对象，msg：提示信息。
+
+            alert(msg);
+            return;
+        },
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            submit_edit();
+        }
+    });
+    //打开登陆界面
+    function goPageLogin() {
+        //移除用户存储的个人信息
+        $api.rmStorage('phone_user_info_full');
+        //打开用户登录的界面
+        api.openWin({
+            name : 'login_win',
+            url : '../../html/user/login.html',
+            bounces : false,
+            animation:{
+                type:"un_curl",                //动画类型（详见动画类型常量）
+                subType:"from_top",       //动画子类型（详见动画子类型常量）
+                duration:500               //动画过渡时间，默认300毫秒
+            }
+        });
+    }
+    function openPicker(){
+        api.openPicker({
+            type: 'date',
+            date: '1990-01-01',
+            title:'选择日期'
+        },function(ret,err){
+            var year = ret.year;
+            var month = ret.month;
+            var day = ret.day;
+            $api.val($api.byId("birthday"),''+year+'/'+month+'/'+day+'');
+        });
+    }
+    apiready = function(){
+        api.parseTapmode();
+        if($api.getStorage('travel_num')!=undefined){
+            show_code();
+
+        }
+        if($api.getStorage('phone_user_info_full')!=undefined){
+            var phone_num = $api.getStorage('phone_user_info_full').phone;
+            $api.attr($api.byId('mobile'),'value',phone_num);
+        }
+//        show_code();
+    };
+    /*
+    * =================================  显示行程号   ================================
+    * */
+    function show_code(){
+        var cmd_member = $api.byId('show_code_main');
+        var pagefn = doT.template($api.text($api.byId('show_table_template')), undefined);
+        var data = {
+            code:$api.getStorage('travel_num')
+        };
+//        api.alert(JSON.stringify( $api.getStorage('activity_cmd')));
+        $api.html(cmd_member, pagefn(data));
+    }
+    /*
+    * =========================================================================
+    * */
+
+    /*
+    * user_id
+    * name
+    * age
+    * address
+    * birthday
+    * */
+    //=================================提交修改部分开始===========================================
+    function submit_edit(){
+        Zepto(function($){
+            var _user_id = $api.getStorage('phone_user_info_full').user_id;
+            var _sex  =document.getElementsByName("sex");
+            /*选择radio开始
+            * */
+            var _sex_Length = _sex.length;
+            for(var i =0;i < _sex_Length;i++)
+            {
+                if(_sex[i].checked)
+                {
+                    var _sex_Value = _sex[i].value;
+
+                }
+            }
+            /*
+            选择radio结束
+            * */
+            var _name = $api.val($api.byId('name'));
+            var _username = $api.val($api.byId('username'));
+            var _address = $api.val($api.byId('address'));
+            var _birthday  = $api.val($api.byId('birthday'));
+            api.ajax({
+                url: config.hostname+'user/updateinfo',
+                method: 'post',
+                data: {
+                    values: {
+                       user_id:_user_id,
+                        name:_name,
+                        username:_username,
+                        address:_address,
+                        sex:_sex_Value,
+                        birthday:_birthday
+                    }
+                }
+            }, function(ret, err) {
+                if (ret.status==1) {
+                    /*
+                    * 显示提交资料成功
+                    * */
+                    showDefault();
+                    /*
+                    * 关闭窗口
+                    * */
+                    api.closeWin({
+                        animation:{
+                            type:'curl',
+                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                            duration:300
+                        }
+                    });
+
+                } else {
+                    api.toast({
+                        msg: '没有变更任何信息！',
+                        duration: 2000,
+                        location: 'middle'
+
+                    });
+                }
+            });
+        })
+    }
+    //==============================提交修改部分结束==============================================
+    function showDefault(){
+        $api.css($api.byId("default"),"display:block");
+        setTimeout(function(){
+            $api.css($api.byId("default"),"display:none");
+        },2000)
+    }
+
+</script>
+</html>

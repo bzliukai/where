@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>申请成为领队</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style>
+        .aui-bar {
+            background: #3bafda;
+            color: #ffffff
+        }
+        body{
+            height: auto;
+        }
+        .aui-card {
+            margin-top: 15px;
+        }
+        .aui-content {
+            margin-bottom: 0;
+        }
+        p {
+            padding: 0 10px;
+        }
+        p.padded {
+            padding: 10px;
+        }
+        .year-list {
+            background: none;
+            text-align: center;
+            overflow: hidden;
+            padding:10px 5px;
+        }
+        .year {
+            text-align: center;
+            font-size: 12px;
+            margin: 0 5px;
+            background: #fff;
+            height: 32px;
+            line-height: 32px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .year.active {
+            background: #ff9900;
+            border: 1px solid #ff9900;
+            color: #ffffff;
+            -webkit-animation: fadeIn .5s ease both;
+            animation: fadeIn .5s ease both;
+        }
+        .year.disabled{
+            background: #eeeeee;
+            border-color: #eeeeee;
+            color: #666;
+        }
+        .price-list .amount strong {
+            font-size: 18px;
+            font-weight: 400;
+        }
+        .basic-info {
+            margin-bottom: 15px;
+        }
+        @-webkit-keyframes fadeIn {
+            from { background: #ffffff;border: 1px solid #ddd;}
+            to { background: #ff9900; border: 1px solid #ff9900;}
+        }
+        .aui-content-padded {
+            margin-top: 15px;
+        }
+        .full {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="aui-toast" style="display:none" id="default">
+    <i class="aui-iconfont aui-icon-check"></i>
+    <div class="aui-toast-content">提交成功</div>
+</div>
+<p class="padded">基本信息</p>
+<div class="aui-content basic-info" id="frm">
+    <div class="aui-form">
+        <div class="aui-input-row">
+            <span class="aui-input-addon">真实姓名</span>
+            <input type="text" class="aui-input" placeholder="真实姓名" id="name" data-rule="*" data-nullmsg="姓名不能为空" data-errmsg="验证失败" data-sucmsg="" />
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">身份证</span>
+            <input type="text" class="aui-input" placeholder="请填写身份证号码" id="ID" data-rule="idcard" data-nullmsg="证件号不能为空" data-errmsg="你输入的证件号不正确" data-sucmsg=""/>
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">任职机构</span>
+            <input type="text" class="aui-input" placeholder="请填写当前任职机构" id="post_office" data-rule="*" data-nullmsg="机构名不能为空" data-errmsg="验证失败" data-sucmsg="" />
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">头衔职位</span>
+            <input type="text" class="aui-input" placeholder="请填写您的头衔职位" id="job_position" data-rule="*" data-nullmsg="头衔不能为空" data-errmsg="验证失败" data-sucmsg="" />
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">申请说明</span>
+            <input type="text" class="aui-input" placeholder="请填写您的申请说明" id="certificate_intro" data-rule="*" data-nullmsg="说明不能为空" data-errmsg="验证失败" data-sucmsg="" />
+        </div>
+    </div>
+</div>
+<p class="padded">上传证件图！部分安卓手机不支持多图上传，请多次单独选择!</p>
+<div class="aui-content-padded" id="container">
+    <a id="selectfiles" href="javascript:void(0);" class="aui-btn aui-btn-block aui-btn-info" tapmode  status="0" >选择证件</a>
+    <ul class="aui-list-view" id="pic_list_view">
+        <!--<li class="aui-list-view-cell">-->
+            <!--单行列表标题效果-->
+        <!--</li>-->
+    </ul>
+</div>
+<div class="aui-content-padded">
+    <div  id="btn" class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined">提交认证</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/config.js"></script>
+<script type="text/javascript" src="../../libs/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="../../script/leader_upload.js"></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js"></script>
+
+<script type="text/javascript">
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        startCheck: function () {
+            // 开始检查执行函数，一般用户动画效果，比如加载中，提交中，验证中。
+        },
+        singleSuccess: function (e, msg) {
+            // 单个表单验证成功执行函数，可以通过这个方法写一些小特效或者处理方法
+            // e：当前验证的对象，msg：提示信息。
+
+        },
+        singleError: function (e, msg) {
+            // 单个表单验证失败执行函数
+            // e：当前验证的对象，msg：提示信息。
+
+            alert(msg);
+            return;
+        },
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            certification();
+        }
+    });
+    apiready = function(){
+//        uploader.init();
+    };
+    //进行认证
+    function certification() {
+        /*
+         phone 手机从库里取
+         name 真实姓名
+         id_card 身份证号
+         certificate 上传的证件，图片url，多图，url1@-@url2@-@url3
+         message 说明信息text框
+
+         */
+//        alert(JSON.stringify($api.getStorage('wx_user_full_info').value.user_full_info));
+
+        var _phone =$api.getStorage('wx_user_full_info').value.user_full_info.phone;
+        var _real_name = $api.val($api.byId('name'));
+        var _id_card = $api.val($api.byId('ID'));
+        var _post_office =  $api.val($api.byId('post_office'));
+        var _job_position =  $api.val($api.byId('job_position'));
+        var _message = $api.val($api.byId('certificate_intro'));
+//        var _certificate = $api.getStorage('img_remote_url').value;
+        if($api.getStorage('img_remote_url')!==undefined){
+            api.ajax({
+                url: config.hostname+'/leader/register',
+                method: 'post',
+                data: {
+                    values: {
+                        user_id:$api.getStorage('phone_user_info_full').user_id,
+                        phone:_phone,
+                        name: _real_name,
+                        id_card:_id_card,
+                        office:_post_office,
+                        position:_job_position,
+                        message:_message,
+                        certificate:$api.getStorage('img_remote_url').value
+
+                    }
+                }
+            },function(ret, err){
+                if (ret.status==1) {
+//                    api.alert({msg:JSON.stringify(ret)});
+                    $api.rmStorage('img_remote_url');
+                    showDefault();
+                    api.closeWin({
+                        animation:{
+                            type:"curl",                //动画类型（详见动画类型常量）
+                            subType:"from_top",       //动画子类型（详见动画子类型常量）
+                            duration:1500               //动画过渡时间，默认300毫秒
+                        }
+                    });
+                } else {
+                    api.alert({msg:JSON.stringify(err)});
+                }
+            });
+        }else{
+            api.toast({
+                msg: '请上传图片之后再认证！',
+                duration: 1000,
+                location: 'middle'
+            });
+        }
+
+
+    }
+    function showDefault(){
+        $api.css($api.byId("default"),"display:block");
+        setTimeout(function(){
+            $api.css($api.byId("default"),"display:none");
+        },2000)
+    }
+
+</script>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style type="text/css">
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../../font/Kaiti-SC-Regular.ttf'),
+            url('../../font/kaiti_sc.otf')
+        }
+        .aui-content{
+            font-family: conmmonFont;
+        }
+    .aui-card {
+        margin-top: 15px;
+    }
+    .aui-input-addon.aui-iconfont {
+        font-size: 20px !important;
+    }
+    .aui-input-row {
+        width: 100% !important;
+    }
+        body {
+            background-position: center;
+            background-size: cover;
+            position: relative;
+
+        }
+        .info {
+            position: relative;
+            padding: 20px 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            vertical-align: center;
+        }
+    </style>
+</head>
+<body>
+        <div id="frm" class="aui-content aui-card">
+            <div class="info">
+            <div  class="aui-form">
+                <div class="aui-input-row">
+                    <i class="aui-input-addon aui-iconfont aui-icon-people aui-text-info"></i>
+                    <input id="user_phone" type="text" class="aui-input" placeholder="手机号"  data-rule="tm" data-nullmsg="手机或固话不能为空" data-errmsg="你输入的不是一个手机或者固话" data-sucmsg=""/>
+                </div>
+
+                <div class="aui-input-row">
+                    <i class="aui-input-addon aui-iconfont aui-icon-lock aui-text-warning"></i>
+                    <input type="password" id="password1" class="aui-input" placeholder="密码" data-rule="s6-10"
+                           data-nullmsg="请输入密码" data-errmsg="你输入的密码格式不正确" data-sucmsg=""/>
+                    <i class="aui-input-addon aui-iconfont aui-icon-attention aui-text-default" tapmode onclick="showPassword();" id="showpass-btn"></i>
+                </div>
+                <div class="aui-input-row">
+                    <i class="aui-input-addon aui-iconfont aui-icon-lock aui-text-warning"></i>
+                    <input type="password" id="password2" class="aui-input" placeholder="确认密码" data-rule="s6-10"
+                           data-nullmsg="请输入密码" data-errmsg="你输入的密码格式不正确" data-sucmsg=""/>
+                </div>
+                <div class="aui-input-row">
+                    <input type="number" class="aui-input" id="code" placeholder="请输入收到的验证码" data-rule="s1-4"
+                           data-nullmsg="请输入验证码" data-errmsg="你输入的验证码不正确" data-sucmsg=""/>
+                <span class="aui-input-addon">
+                    <div class="aui-btn" id="sendVerify" status="1" tapmode onclick="getVerify()">获取验证码
+                    </div>
+                </span>
+                </div>
+
+                <div id="btn" class="aui-btn-row">
+                    <div class="aui-btn aui-btn-success aui-btn-block aui-btn-outlined" onclick="return false">完善信息</div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+</body>
+<script type="text/javascript" src="../../script/api.js" ></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js" ></script>
+<script type="text/javascript" src="../../script/config.js" ></script>
+<script type="text/javascript">
+
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            register_now();
+        }
+    });
+
+    var isinerval,times;
+    apiready = function () {
+        api.parseTapmode();
+    }
+    function showPassword(){
+        $api.attr($api.byId('password'),'type','text');
+        $api.removeCls($api.byId('showpass-btn'),'aui-icon-attention');
+        $api.addCls($api.byId('showpass-btn'),'aui-icon-attentionfill');
+        $api.attr($api.byId('showpass-btn'),'onclick','hidePassword();');
+        api.parseTapmode();
+    }
+    function hidePassword(){
+        $api.attr($api.byId('password'),'type','password');
+        $api.removeCls($api.byId('showpass-btn'),'aui-icon-attentionfill');
+        $api.addCls($api.byId('showpass-btn'),'aui-icon-attention');
+        $api.attr($api.byId('showpass-btn'),'onclick','showPassword();');
+        api.parseTapmode();
+    }
+    function getVerify() {
+        var user_phone = $api.val($api.byId('user_phone'));
+        var password1 = $api.val($api.byId('password1'));
+        var password2 = $api.val($api.byId('password1'));
+        var code = $api.val($api.byId('code'));
+        var sendVerify = $api.byId('sendVerify');
+        var status = $api.attr(sendVerify,'status');
+        if(status!=1){
+            return;
+        }
+        $api.removeAttr(sendVerify,'onclick');
+        api.parseTapmode();
+        $api.html(sendVerify,'<span id="GetVerify">120</span>S');
+        times = 119;
+        isinerval = setInterval("CountDown()", 1000);
+//        setTimeout(function(){
+//            $api.val($api.byId("code"),'888888');
+//        },500)
+//        alert(user_phone);
+        api.ajax({
+            url: config.hostname+'login/weixincode',
+            method: 'post',
+            data: {
+                values:{
+                    'phone':user_phone
+                }
+            }
+        },function(ret, err){
+            if (ret) {
+                api.alert({msg:JSON.stringify(ret)});
+            } else {
+                api.alert({msg:JSON.stringify(err)});
+            }
+        });
+    }
+    function CountDown() {
+        if (times < 1) {
+            var sendVerify = $api.byId('sendVerify');
+            $api.attr(sendVerify,'onclick','getVerify()');
+            $api.attr(sendVerify,'status','1');
+            api.parseTapmode();
+            $api.html(sendVerify,'重新获取');
+            clearInterval(isinerval);
+            return;
+        }
+        var getVerify = $api.byId('GetVerify');
+        $api.html(getVerify,''+times+'');
+        times--;
+    }
+    function register_now(){
+        api.showProgress({
+            style: 'default',
+            animationType: 'zoom ',
+            title: '正在提交...',
+            text: '先喝杯茶...',
+            modal: false
+        });
+        var user_phone = $api.val($api.byId('user_phone'));
+        var password1 = $api.val($api.byId('password1'));
+        var password2 = $api.val($api.byId('password1'));
+        var code = $api.val($api.byId('code'));
+        if(password1==password2){
+            var wx_base_info = $api.getStorage('wx_user_info');
+
+//            alert('本地存储的用户信息：'+wx_base_info.value.unionid);
+                    /*
+                    * 下载微信用户的头像，
+                    * */
+            api.ajax({
+                url: config.hostname+'login/weixinreg',
+                method: 'post',
+                data: {
+                    values:{
+                        phone: user_phone,
+                        password:password1,
+                        code:code,
+                        unionid:wx_base_info.value.unionid,
+                        username:wx_base_info.value.nickname,
+                        head_img:wx_base_info.value.headimgurl
+                    }
+                }
+            },function(ret, err){
+//                alert(JSON.stringify(ret));
+                if (ret.status==1){
+                    api.hideProgress();
+//                    api.alert({msg:'正确的返回信息'+JSON.stringify(ret)});
+                    //储存用户所有信息
+                    window.ret_info = ret;
+                    $api.setStorage('phone_user_info_full',ret_info);
+                    alert(JSON.stringify($api.getStorage('phone_user_info_full')));
+                } else {
+                    api.hideProgress();
+                    api.alert({msg:'错误的返回信息'+JSON.stringify(err)});
+                }
+            });
+
+        }else{
+            alert('两次密码不符!');
+        }
+
+    }
+</script>
+</html>

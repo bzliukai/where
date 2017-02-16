@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+    	body{
+    		
+    	}
+    </style>
+</head>
+<body>
+	
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javaxcript" src="../../script/mycommon.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		window.imageClip = api.require('imageClip');
+		var img = api.pageParam.imgUrl;
+		openImageClip(img)
+	};
+	//头像切图
+	function openImageClip(img){
+			imageClip.open({
+				path:img,
+				clipRect:{
+					x:(api.winWidth - 200) / 2,
+					y:(api.winHeight - 200) / 2,
+					w:200,
+					h:200,
+					fixation: true
+				}
+			},function(ret, err){
+				if(ret){
+					api.openFrame({
+						name:'userImgClip',
+						url:'./userImgClip.html',
+						rect:{
+							x:0,
+							y:0,
+							w:'auto',
+							h:60
+						},
+						vScrollBarEnabled:false,
+						bounce:false
+					});
+					api.openFrame({
+						name:'imageSave',
+						url:'./imageSave.html',
+						rect:{
+							x:0,
+							y:api.winHeight - 50 ,
+							w:'auto',
+							h:50
+						},
+						vScrollBarEnabled:false,
+						bounce:false
+					});
+				}else{
+			        api.alert({msg:err.msg});
+			    }
+			});
+		}
+		   
+	//关闭截图
+	function cansel(){
+		imageClip.close();
+	}
+	
+	function save(){
+
+	
+		imageClip.save(function(ret, err){
+	    if(ret){
+            //存储用户的头像本地地址
+            $api.setStorage('user_new_select_logo',ret.savePath);
+            //在frame2界面执行替换当前头像的函数
+			api.execScript({
+				name:"root",
+				frameName:"frame2",
+	            script: 'ImgUrl("'+ ret.savePath +'");'
+            });
+
+	    }else{
+	        api.alert({msg:err.msg});
+	    }
+	});
+	}
+
+
+</script>
+</html>

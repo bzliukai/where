@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>活动</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/aui-flex.css"/>
+    <style>
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('../font/Kaiti-SC-Regular.ttf'),
+            url('../font/kaiti_sc.otf')
+        }
+        .aui-content{
+            font-family: conmmonFont;
+        }
+        .aui-content {
+            background: #ffffff;
+            overflow: hidden;
+        }
+        .to-bottom{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-direction: column;
+            margin-top: 70%;
+        }
+        .aui-text-primary{
+            font-family: conmmonFont;
+        }
+        .aui-list-view-cell .aui-img-object{
+            border-radius: 50%;
+        }
+        .null{
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+    <!--开始显示加载的旅行详情-->
+    <div class="aui-content aui-content-padded" id="travel_details">
+        <!--加载模板到这个地方 travel_details-->
+    </div>
+    <!--结束显示加载的旅游详情-->
+
+    <!--显示现在的操作，创建进程或者加入进程或者查看进程，分为两组-->
+    <div class="aui-flex-item-12" id="show_temp_here">
+        <!--加载模板到这个地方 show_temp_here-->
+
+    </div>
+    <script id="cmd_member_template" type="text/x-dot-template">
+        <div class="aui-flex-item-12">
+            <div class="aui-flex-col to-bottom ">
+                {{? it.level == 0}}
+                <div class="aui-content aui-content-padded">
+                    <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined" id="watch_travel" tapmode onclick="watch_travel_member()">查看行程</div>
+                </div>
+                {{??}}
+                <div class="aui-content aui-content-padded">
+                    <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined" id="create_travel" tapmode onclick="create_travel('create_travel_win')">创建行程</div>
+                </div>
+                {{?}}
+                <div class="aui-content aui-content-padded">
+                    <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined" id = "join_travel"tapmode onclick="create_travel('join_travel_win')">加入行程</div>
+                </div>
+            </div>
+        </div>
+
+    </script>
+    <!--第一组结束-->
+    <!--旅途详情模板-->
+    <script id="travel_detail_template" type="text/x-dot-template">
+
+        <div class="aui-flex-row aui-flex-center ">
+            <!--旅程的标题-->
+            <div class="aui-flex-item-12 aui-flex-col aui-flex-center aui-padded-20">
+                <h3 class="aui-text-primary">第九届北戴河轮滑之春</h3>
+            </div>
+            <!--旅程的领队和人数信息-->
+            <div class="aui-flex-item-12 aui-flex-col aui-flex-center ">
+                <div class="aui-flex-item-6 aui-flex-col aui-flex-center">
+                    <div class="aui-flex-item-6 aui-flex-col aui-flex-center">
+                        <h3 class="aui-text-warning">风信子</h3>
+                        <h5 class="aui-text-default aui-padded-10">领队</h5>
+                    </div>
+                </div>
+                <div class="aui-flex-item-6 aui-flex-col aui-flex-center aui-border-l">
+                    <div class="aui-flex-item-6 aui-flex-col aui-flex-center">
+                        <h3 class="aui-text-warning">22(人)</h3>
+                        <h5 class="aui-text-default aui-padded-10">人数</h5>
+                    </div>
+                </div>
+            </div>
+            <!--旅程的队员和人数签到信息-->
+            <div class="aui-flex-item-12 aui-flex-col aui-flex-center aui-padded-20">
+                <div class="aui-flex-item-6 aui-flex-col aui-flex-left">
+                    <h3 class="aui-text-default">队员:</h3>
+                </div>
+                <div class="aui-flex-item-6 aui-flex-col aui-flex-right">
+                    <h3 class="aui-text-primary">17/22</h3>
+                </div>
+            </div>
+            <!--旅行成员的头像-->
+            <div class="aui-flex-col aui-flex-center aui-padded-20">
+                <ul class="aui-list-view aui-grid-view">
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                    <li class="aui-list-view-cell aui-img aui-col-xs-2">
+                        <img class="aui-img-object" src="../image/noavatar.gif">
+                    </li>
+                </ul>
+
+            </div>
+            <!--旅行成员的头像 结束-->
+            <!--根据权限决定队员是签到还是发起签到-->
+            <div class="aui-flex-item-12 aui-flex-row aui-flex-center ">
+                <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined " id = "send_sign_activity"tapmode onclick="">发起签到</div>
+                <div class="null"></div>
+                <div class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined " id = "watch_activity_line"tapmode onclick="">查看轨迹</div>
+            </div>
+            <!--签到按钮结束-->
+        </div>
+    </script>
+    <!--路途详情模板结束-->
+</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<script type="text/javascript">
+    var delay = 0;
+    apiready = function(){
+        if($api.getStorage('phone_user_info_full')!=undefined){
+            setTimeout(function(){
+                api.sendEvent({
+                    name: 'default_cmd_btn'
+                });
+            },1000);
+        }
+        //监听事件-- 显示旅行详情
+        api.addEventListener({
+            name: 'show_travel_details'
+        }, function(ret, err) {
+            watch_travel_member();
+        });
+        //监听事件-- 显示操作按钮 -- 到底是查看行程-- 创建行程
+        api.addEventListener({
+            name: 'default_cmd_btn'
+        }, function(ret, err) {
+            cmd_show_template();
+        });
+        /*
+         * 根据用户的level值来确定是否创建行程 --cmd_show_template 函数
+         * */
+
+
+
+        function cmd_show_template(){
+            api.showProgress({
+                style: 'default',
+                animationType: 'fade',
+                title: '加载中...',
+                text: '稍等...',
+                modal: false
+            });
+            var cmd_member = $api.byId('travel_details');
+            var pagefn = doT.template($api.text($api.byId('cmd_member_template')), undefined);
+            var data = {
+                level:$api.getStorage('phone_user_info_full').level||0
+            };
+//        api.alert(JSON.stringify( $api.getStorage('activity_cmd')));
+            $api.html(cmd_member, pagefn(data));
+            api.hideProgress();
+        }
+        if(api.systemType != 'ios'){
+            delay = 300;
+        }
+        api.parseTapmode();
+//        alert($api.getStorage('phone_user_info_full').level);
+
+
+    };
+
+    /*行程相关的函数，需要打开那个窗口就传那个窗口的名称*/
+    function create_travel(name){
+            api.openWin({
+                name:''+name+'',
+                url:'./travel/'+name+'.html',
+                delay:delay
+            })
+
+    }
+    /*
+    * cmd_show_template 函数
+    * 根据当前使用用户的level值来确定是否是领队，只有领队才能使用创建行程
+    * */
+    function cmd_show_template(){
+        if ($api.getStorage('phone_user_info_full')==undefined){
+            var _level = 0;
+        }else{
+            _level = $api.getStorage('phone_user_info_full').level;
+        }
+        var cmd_member = $api.byId('travel_details');
+        var pagefn = doT.template($api.text($api.byId('cmd_member_template')), undefined);
+        var data = {
+            level:_level
+        };
+//        api.alert(JSON.stringify( $api.getStorage('activity_cmd')));
+        $api.html(cmd_member, pagefn(data));
+    }
+    /*
+    *  展开当前用户的旅行详情
+    *
+    * */
+    function watch_travel_member() {
+        var _level = $api.getStorage('phone_user_info_full').level||0;
+        var data = {
+            level:_level
+        };
+        var _travel_box = $api.byId('travel_details');
+        var pagefn = doT.template($api.text($api.byId('travel_detail_template')), undefined);
+        $api.html(_travel_box, pagefn(data));
+
+    }
+
+</script>
+</html>

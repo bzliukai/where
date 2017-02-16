@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="./css/aui.css">
+    <link rel="stylesheet" type="text/css" href="./css/aui-win.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css"/>
+    <style>
+        @font-face
+        {
+            font-family: conmmonFont;
+            src: url('font/Kaiti-SC-Regular.ttf'),
+                 url('font/kaiti_sc.otf')
+        }
+        header, #footer
+        {
+            font-family:conmmonFont;
+        }
+        header{ background-color: #fff; }
+        header ul li { height: 40px; line-height: 40px; text-align: center; display: none; color: #323237; position: relative;font-size: 18px;  }
+        header ul li.active{ display: block; }
+        #footer{  background-color: #fff; }
+        #footer ul li{  padding-top: 34px; padding-bottom: 4px; background: url() no-repeat center 2px; background-size: auto 30px; text-align: center; }
+        #footer ul li.active{ color: #6ab494; }
+        #footer ul li:nth-child(1){ background-image: url(./image/tab/qing_enpty2x.png); }
+        #footer ul li:nth-child(2){ background-image: url(./image/tab/activity_enpty2x.png); }
+        #footer ul li:nth-child(3){ background-image: url(./image/tab/mine_enpty2x.png); }
+        /*#footer ul li:nth-child(4){ background-image: url(./image/bottombtn0401.png); }*/
+        #footer ul li:nth-child(1).active{ background-image: url(./image/tab/qing2x.png); }
+        #footer ul li:nth-child(2).active{ background-image: url(./image/tab/activity2x.png); }
+        #footer ul li:nth-child(3).active{ background-image: url(./image/tab/mine2x.png); }
+        /*#footer ul li:nth-child(4).active{ background-image: url(./image/bottombtn0402.png); }*/
+    </style>
+</head>
+<body>
+<div id="wrap" class="flex-wrap flex-vertical">
+    <header id="aui-header">
+        <ul>
+            <li class="border-b active" >首页</li>
+            <li class="border-b" >活动</li>
+            <li class="border-b" >我的</li>
+            <!--<li class="border-b" >文档</li>-->
+        </ul>
+    </header>
+    <div id="main" class="flex-con">
+
+    </div>
+    <div id="footer" class="border-t">
+        <ul class="flex-wrap" >
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active" >首页</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >活动</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >我的</li>
+            <!--<li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >文档</li>-->
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript">
+
+    apiready = function () {
+        var header = $api.dom('#aui-header');
+//        $api.setStorage('aui_header', {
+//            value:header
+//        });
+        $api.fixStatusBar(header);
+        funIniGroup();
+        if ($api.getStorage('phone_user_info_full')!=undefined) {//getStorage('lastUser')
+//            alert(JSON.stringify($api.getStorage('phone_user_info_full')));
+            // 有，继续
+            goPageLogin();
+            api.toast({
+                msg: '尊敬的用户！欢迎回来!',
+                duration: 4000,
+                location: 'middle'
+            });
+        } else {
+            goPageLogin();
+            // 登录注册
+            return;
+        }
+    };
+//    初始化界面
+    function funIniGroup(){
+//        var _aui_header = $api.dom('header').offsetHeight;
+//        $api.setStorage('_aui_header', _aui_header);
+        var eHeaderLis = $api.domAll('header li'),
+            frames = [];
+        for (var i = 0,len = eHeaderLis.length; i < len; i++) {
+                frames.push( {
+                    name: 'frame'+i, 
+                    url: './html/frame'+i+'.html', 
+                    bgColor : 'rgba(0,0,0,.2)',
+                    bounces:false
+                } )
+        }
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {
+                x: 0, 
+                y: $api.dom('header').offsetHeight, 
+                w: api.winWidth, 
+                h: $api.dom('#main').offsetHeight
+            },
+            index: 0,
+            frames: frames
+        }, function (ret, err) {
+            if(ret){
+                /*
+                 * 根据用户权限创建活动页面对应的按钮
+                 * */
+
+//                setTimeout(function(){
+//                    api.sendEvent({
+//                        name: 'default_cmd_btn'
+//                    });
+//                },1000);
+
+                /*
+                 * 根据用户权限创建活动页面对应 的按钮 结束
+                 * */
+            }
+
+        });
+    }
+
+    // 随意切换按钮
+    function randomSwitchBtn( tag ) {
+        if( tag == $api.dom('#footer li.active') )return;
+        var eFootLis = $api.domAll('#footer li'),
+            eHeaderLis = $api.domAll('header li'),
+            index = 0;
+        for (var i = 0,len = eFootLis.length; i < len; i++) {
+            if( tag == eFootLis[i] ){
+                index = i;
+            }else{
+                $api.removeCls(eFootLis[i], 'active');
+                $api.removeCls(eHeaderLis[i], 'active');
+            }
+        }
+        $api.addCls( eFootLis[index], 'active');
+        $api.addCls( eHeaderLis[index], 'active');
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: index
+        });
+    }
+    //打开登陆界面
+    function goPageLogin() {
+        api.openWin({
+            name : 'login_win',
+            url : './html/user/login.html',
+            bounces : false,
+            animation:{
+                type:"un_curl",                //动画类型（详见动画类型常量）
+                subType:"from_top",       //动画子类型（详见动画子类型常量）
+                duration:500               //动画过渡时间，默认300毫秒
+            }
+        });
+    }
+</script>

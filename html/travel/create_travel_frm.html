@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>创建行程</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style>
+        .aui-bar {
+            background: #3bafda;
+            color: #ffffff
+        }
+        body{
+            height: auto;
+        }
+        .aui-card {
+            margin-top: 15px;
+        }
+        .aui-content {
+            margin-bottom: 0;
+        }
+        p {
+            padding: 0 10px;
+        }
+        p.padded {
+            padding: 10px;
+        }
+        .price-list .amount strong {
+            font-size: 18px;
+            font-weight: 400;
+        }
+        .basic-info {
+            margin-bottom: 15px;
+        }
+        @-webkit-keyframes fadeIn {
+            from { background: #ffffff;border: 1px solid #ddd;}
+            to { background: #ff9900; border: 1px solid #ff9900;}
+        }
+        .aui-content-padded {
+            margin-top: 15px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="aui-toast" style="display:none" id="default">
+    <i class="aui-iconfont aui-icon-check"></i>
+    <div class="aui-toast-content">创建行程成功</div>
+</div>
+<div class="aui-content basic-info" id="frm">
+    <div class="aui-form aui-content-padded">
+        <p class="padded">基本信息</p>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">活动名称</span>
+            <input type="text" class="aui-input" placeholder="请填写活动名称" id="activity_name" data-rule="*" data-nullmsg="名称不能为空" data-errmsg="验证失败" data-sucmsg=""  />
+        </div>
+        <div class="aui-input-row">
+            <span class="aui-input-addon">活动人数</span>
+            <input type="text" class="aui-input" placeholder="请填写人数" id="person_number" data-rule="n" data-nullmsg="人数不能为空" data-errmsg="你输入的数值不对" data-sucmsg="" />
+        </div>
+        <p class="padded">起始坐标</p>
+        <div class="aui-input-row" tapmode onclick="showSearch_start();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-warning"></i>
+            <input type="text" class="aui-input" placeholder="请填写出发地标" id="startCity" data-rule="*" data-nullmsg="出发地标不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+        <div class="aui-input-row" tapmode onclick="showSearch_end();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-warning"></i>
+            <input type="text" class="aui-input" placeholder="请填写集合地标" id="endCity" data-rule="*" data-nullmsg="集合地标不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+        <p class="padded">行程轨迹</p>
+        <div class="aui-input-row" tapmode onclick="showSearch_pass1();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-success"></i>
+            <input type="text" class="aui-input" placeholder="请填写地点1" id="passCity1" data-rule="*" data-nullmsg="地点一不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+        <div class="aui-input-row" tapmode onclick="showSearch_pass2();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-success"></i>
+            <input type="text" class="aui-input" placeholder="请填写地点2" id="passCity2" data-rule="*" data-nullmsg="地点二不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+        <div class="aui-input-row" tapmode onclick="showSearch_pass3();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-success"></i>
+            <input type="text" class="aui-input" placeholder="请填写地点3" id="passCity3" data-rule="*" data-nullmsg="地点三不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+        <div class="aui-input-row" tapmode onclick="showSearch_pass4();">
+            <i class="aui-input-addon aui-iconfont aui-icon-locationfill aui-text-success"></i>
+            <input type="text" class="aui-input" placeholder="请填写地点4" id="passCity4" data-rule="*" data-nullmsg="地点四不能为空" data-errmsg="验证失败" data-sucmsg="" readonly/>
+        </div>
+    </div>
+</div>
+
+<div class="aui-content-padded">
+    <div  id="btn" class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined">创建行程</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/config.js"></script>
+<script type="text/javascript" src="../../script/availdate-v1.0.2.js"></script>
+<script type="text/javascript" src="../../server/Chat/Web/js/swfobject.js"></script>
+<script type="text/javascript" src="../../server/Chat/Web/js/web_socket.js"></script>
+<script type="text/javascript">
+    /*
+    * 验证表单部分================================================================
+    * */
+    ac.addRule({
+        "tm": /((15)\d{9})|((13)\d{9})|((18)\d{9})|(0[1-9]{2,3}\-?[1-9]{6,7})/i
+    });
+    ac.form({
+        area: "#frm",    // 验证区域，支持标签，id，class，推荐使用id或者class
+        btn: "#btn",     // 触发验证的按钮或者元素，支持标签，id，class，推荐使用id或者class
+        startCheck: function () {
+            // 开始检查执行函数，一般用户动画效果，比如加载中，提交中，验证中。
+        },
+        singleSuccess: function (e, msg) {
+            // 单个表单验证成功执行函数，可以通过这个方法写一些小特效或者处理方法
+            // e：当前验证的对象，msg：提示信息。
+
+        },
+        singleError: function (e, msg) {
+            // 单个表单验证失败执行函数
+            // e：当前验证的对象，msg：提示信息。
+
+            alert(msg);
+            return;
+        },
+        endSuccess: function (data) {
+            //验证成功执行register.js中的注册方法
+            create_travel();
+        }
+    });
+    /*
+    * 验证表单结束
+    * */
+
+    apiready = function(){
+        api.parseTapmode();
+    };
+
+    //==============================选择地点的搜索界面 开始======================================
+    /*
+     点击选择起点时打开起始点搜索界面
+    * */
+    function showSearch_start(){
+        api.openWin({
+            name: 'start_line_search_win',
+            url: 'start_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    /*
+     点击选择终点时打开起始点搜索界面
+     * */
+    function showSearch_end(){
+        api.openWin({
+            name: 'end_line_search_win',
+            url: 'end_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    /*
+     点击选择中间点1时打开起始点搜索界面
+     * */
+    function showSearch_pass1(){
+        api.openWin({
+            name: 'pass1_line_search_win',
+            url: 'pass1_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    /*
+     点击选择中间点2时打开起始点搜索界面
+     * */
+    function showSearch_pass2(){
+        api.openWin({
+            name: 'pass2_line_search_win',
+            url: 'pass2_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    /*
+     点击选择中间点3时打开起始点搜索界面
+     * */
+    function showSearch_pass3(){
+        api.openWin({
+            name: 'pass3_line_search_win',
+            url: 'pass3_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    /*
+     点击选择中间点4时打开起始点搜索界面
+     * */
+    function showSearch_pass4(){
+        api.openWin({
+            name: 'pass4_line_search_win',
+            url: 'pass4_line_search_win.html',
+            bounces:false,
+            delay: 300
+        });
+    }
+    //==============================选择地点的搜索界面 结束======================================
+
+    //===================监听地图是否需要插入地点到响应的文本框  开始================================
+
+    function insertStartCity(lat,lon,name){
+        $api.val($api.byId("startCity"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('startCity',{
+            value:lat+','+lon
+        });
+//        alert(JSON.stringify($api.getStorage('startCity').value));
+    }
+    function insertEndCity(lat,lon,name){
+        $api.val($api.byId("endCity"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('endCity',{
+            value:lat+','+lon
+        });
+
+    }
+    function insertPass1City(lat,lon,name){
+        $api.val($api.byId("passCity1"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('passCity1',{
+            value:lat+','+lon
+        });
+
+    }
+    function insertPass2City(lat,lon,name){
+        $api.val($api.byId("passCity2"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('passCity2',{
+            value:lat+','+lon
+        });
+
+    }
+    function insertPass3City(lat,lon,name){
+        $api.val($api.byId("passCity3"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('passCity3',{
+            value:lat+','+lon
+        });
+
+    }
+    function insertPass4City(lat,lon,name){
+        $api.val($api.byId("passCity4"),name);
+//        alert(lat+','+lon);
+        $api.setStorage('passCity4',{
+            value:lat+','+lon
+        });
+
+    }
+    //===================监听地图是否需要插入地点到响应的文本框  结束================================
+    /*
+    * create_travel 创建行程函数 进行Ajax数据的提交
+    *
+    * */
+    function create_travel(){
+        /*
+        * user_id
+        * travel_name
+        *
+        * travel_start
+        * travel_end
+        * travel_line
+        *
+        * */
+        //领队ID
+        window._leader_id =$api.getStorage('phone_user_info_full').user_id;
+//        alert('领队ID:'+_leader_id);
+        //活动名称
+        var _travel_name =  $api.val($api.byId('activity_name'));
+        //行程的人数
+        //行程开始的地点 person_number
+        var _person_number =  $api.val($api.byId('person_number'));
+        //行程开始经纬度
+        var _travel_start =  $api.getStorage('startCity').value;
+
+        //行程结束的经纬度
+        var _travel_end =  $api.getStorage('endCity').value;
+
+        //经过的中间位置点，进行字符串拼接，经纬度
+        var _travel_line = '';
+        _travel_line+=$api.getStorage('passCity1').value+'@-@';
+        _travel_line+=$api.getStorage('passCity2').value+'@-@';
+        _travel_line+=$api.getStorage('passCity3').value+'@-@';
+        _travel_line+=$api.getStorage('passCity4').value;
+//        api.alert(_travel_line);
+        //创建行程。向服务器提交行程相关的数据
+        api.ajax({
+            url: config.hostname+'travel/create',
+            method: 'post',
+            data: {
+                values: {
+                    user_id:_leader_id,
+                    travel_name:_travel_name,
+                    person_number:_person_number,
+                    travel_start:_travel_start,
+                    travel_end:_travel_end,
+                    travel_line:_travel_line
+                }
+            }
+        },function(ret, err){
+            alert(JSON.stringify(ret));
+            if (ret.status==1) {
+                //此处应该保存创建的行程号码，用来队员加入行程使用
+                $api.setStorage('travel_num',ret.travel_num);
+//                alert($api.getStorage('travel_num'));
+                    var jsfun = 'show_code()';
+                    api.execScript({
+                        name:'my_info_win',
+                        frameName: 'my_info_frm',
+                        script: jsfun
+                    });
+
+                /*
+                * 连接WebSocket
+                * */
+
+//                connect();
+                /*
+
+
+                * 提示当前创建的行程号
+                * */
+                api.toast({
+                    msg: '行程号为：'+$api.getStorage('travel_num')+',详情请查看个人中心',
+                    duration: 3000,
+                    location: 'middle'
+                });
+                //创建行程完成,立刻把该领队放入该行程组中
+                api.ajax({
+                    url: config.hostname+'ontravel/join',
+                    method: 'post',
+                    data: {
+                        values: {
+                            travel_num:$api.getStorage('travel_num'),
+                            user_id: $api.getStorage('phone_user_info_full').user_id,
+                            user_phone:$api.getStorage('phone_user_info_full').phone,
+                            user_name:$api.getStorage('phone_user_info_full').username,
+                            user_img_dot:$api.getStorage('phone_user_info_full').headimg_dot,
+                            user_img_head:$api.getStorage('phone_user_info_full').head_img,
+                            user_now_line:$api.getStorage('now_user_lat_lon')
+                        }
+                    }
+                }, function(ret, err) {
+                    if (ret) {
+
+                        /*
+                        * 加入行程组成功，拿到所有改行程组用户的信息
+                        * */
+                        api.alert({ msg: JSON.stringify(ret) });
+                        /*
+                         * 发送渲染旅行详情事件
+                         * */
+                        api.sendEvent({
+                            name: 'show_travel_details'
+
+                        });
+                        //每隔1分钟，向服务器提交当前用户的位置信息
+                        api.ajax({
+                            url: config.hostname+'ontravel/updateline',
+                            method: 'post',
+                            data: {
+                                values: {
+                                    travel_num:$api.getStorage('travel_num'),
+                                    user_id: $api.getStorage('phone_user_info_full').user_id,
+                                    user_now_line:$api.getStorage('now_user_lat_lon')
+                                }
+                            }
+                        }, function(ret, err) {
+                            if (ret) {
+                                api.alert({ msg: JSON.stringify(ret) });
+                            } else {
+                                api.alert({ msg: JSON.stringify(err) });
+                            }
+                        });
+                        //
+                        /*
+                         * 关闭当前窗口
+                         * */
+                        api.closeWin({
+                            animation:{
+                                type:'curl',
+                                subType:"from_top",       //动画子类型（详见动画子类型常量）
+                                duration:300
+                            }
+                        });
+
+
+                    } else {
+                        api.alert({ msg: JSON.stringify(err) });
+                    }
+                });
+
+
+//                api.alert({msg:'正确信息'+JSON.stringify(ret)});
+            } else {
+                api.alert({msg:'行程未结束，结束后再创建！'});
+            }
+        });
+    }
+
+
+
+</script>
+</html>

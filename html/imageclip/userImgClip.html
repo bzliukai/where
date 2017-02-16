@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui-flex.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/mycommon.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui-win.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+
+    <style>
+    	html,body{
+    		width:100%;
+    		height: 50%;
+    		background-color:transparent;
+    	}
+    	.header{
+    		width:100%;
+    		height:10px;
+    		/*background-color:#f1c40f;*/
+    		color:#fff !important;
+    		line-height: 50px;
+    	}
+    	.header a{
+    		color:#fff !important
+    	}
+    	#select{
+            padding-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+	<!--<div class="header c_blu">-->
+		<!--<button class="aui-btn aui-btn-info leftL"  onclick="select()">相册</button>-->
+		<!--<button class="aui-btn aui-btn-info right" onclick="Close()">取消</button>-->
+	<!--</div>-->
+    <div id="select"></div>
+    <div class="aui-flex-item-12 aui-flex-col aui-flex-center aui-padded-10">
+        <div class="aui-flex-item-6 aui-flex-col aui-flex-left">
+            <div class="aui-btn aui-text-primary" onclick="select()">相册</div>
+        </div>
+        <div class="aui-flex-item-6 aui-flex-col aui-flex-right">
+            <div class="aui-btn aui-text-primary" onclick="Close()">取消</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mycommon.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		 window.imageClip = api.require('imageClip');
+		
+	};
+	//关闭截图
+	function Close(){
+		api.closeWin({
+			name:'imageWin'
+        });
+        
+	}
+	function select(){
+	api.getPicture({
+	    sourceType: 'album',
+	    encodingType: 'jpg',
+	    mediaValue: 'pic',
+	    destinationType: 'url'
+	}, function(ret, err){ 
+	    if (ret) {
+	    	
+	         if(!ret.data){//如果不选择图片，则退出
+	         	return ;
+	         }
+	        api.execScript({//首先关闭一下imageClip，否则图片的路径是不会变的
+	        	name:'imageWin',
+	        	script:'cansel();'
+	        });
+			api.execScript({
+				name:'imageWin',
+                script: 'openImageClip("'+ ret.data +'");'
+            });
+	
+	    } else{
+	        api.alert({msg:err.msg});
+	    }
+	});
+	return false;
+	}
+</script>
+</html>
